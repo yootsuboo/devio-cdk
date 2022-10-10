@@ -4,7 +4,8 @@ export abstract class Resource {
   constructor() {}
 
   abstract createResources(scope: cdk.Construct): void;
-
+  
+  // protectedを使用することで、参照先でも使用できるようになる
   protected createResourceName(
     scope: cdk.Construct,
     originalName: string
