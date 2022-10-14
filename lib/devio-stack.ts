@@ -8,6 +8,7 @@ import { RouteTable } from "./resource/routeTable";
 import { NetworkAcl } from "./resource/networkAcl";
 import { IamRole } from "./resource/iamRole";
 import { SecurityGroup } from "./resource/securityGroup";
+import { Ec2 } from "./resource/ec2";
 
 export class DevioStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -63,5 +64,13 @@ export class DevioStack extends cdk.Stack {
     
     const securityGroup = new SecurityGroup(vpc.vpc);
     securityGroup.createResources(this);
+    
+    const ec2 = new Ec2(
+      subnet.app1a,
+      subnet.app1c,
+      iamRole.instanceProfileEc2,
+      securityGroup.ec2
+    );
+    ec2.createResources(this);
   }
 }
