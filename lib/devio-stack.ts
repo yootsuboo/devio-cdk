@@ -10,6 +10,7 @@ import { IamRole } from "./resource/iamRole";
 import { SecurityGroup } from "./resource/securityGroup";
 import { Ec2 } from "./resource/ec2";
 import { Alb } from "./resource/alb";
+import { SecretsManager, OSecretKey } from "./resource/secretsManager";
 
 export class DevioStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -83,5 +84,11 @@ export class DevioStack extends cdk.Stack {
       ec2.instance1c
     );
     alb.createResources(this);
+    
+    const secretsManager = new SecretsManager();
+    secretsManager.createResources(this);
+    
+    const masterUsername = SecretsManager.getDynamicReference(secretsManager.rdsCluster, OSecretKey.MasterUsername);
+    const masterUserPassword = SecretsManager.getDynamicReference(secretsManager.rdsCluster, OSecretKey.MasterUserPassword);
   }
 }
