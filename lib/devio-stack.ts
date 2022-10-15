@@ -11,6 +11,8 @@ import { SecurityGroup } from "./resource/securityGroup";
 import { Ec2 } from "./resource/ec2";
 import { Alb } from "./resource/alb";
 import { SecretsManager, OSecretKey } from "./resource/secretsManager";
+import { Rds } from "./resource/rds";
+import { RedirectProtocol } from "aws-cdk-lib/aws-s3";
 
 export class DevioStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -90,5 +92,11 @@ export class DevioStack extends cdk.Stack {
     
     const masterUsername = SecretsManager.getDynamicReference(secretsManager.rdsCluster, OSecretKey.MasterUsername);
     const masterUserPassword = SecretsManager.getDynamicReference(secretsManager.rdsCluster, OSecretKey.MasterUserPassword);
+    
+    const rds = new Rds(
+      subnet.db1a,
+      subnet.db1c,
+    );
+    rds.createResources(this);
   }
 }
