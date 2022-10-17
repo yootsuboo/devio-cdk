@@ -12,4 +12,17 @@ test("Rds", () => {
         SubnetIds: anything(),
         DBSubnetGroupName: "undefined-undefined-sng-rds"
     }));
+    
+    expect(stack).to(countResources("AWS::RDS::DBClusterParameterGroup", 1));
+    expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
+        Description: "Cluster Parameter Group for RDS",
+        Family: "aurora-mysql5.7",
+        Parameters: { time_zome: "UTC" }
+    }));
+    
+    expect(stack).to(countResources("AWS::RDS::DBParameterGroup", 1));
+    expect(stack).to(haveResource("AWS::RDS::DBParameterGroup", {
+        Description: "Parameter Group for RDS",
+        Family: "aurora-mysql5.7"
+    }));
 });
