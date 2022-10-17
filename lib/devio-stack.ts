@@ -10,9 +10,8 @@ import { IamRole } from "./resource/iamRole";
 import { SecurityGroup } from "./resource/securityGroup";
 import { Ec2 } from "./resource/ec2";
 import { Alb } from "./resource/alb";
-import { SecretsManager, OSecretKey } from "./resource/secretsManager";
+import { SecretsManager } from "./resource/secretsManager";
 import { Rds } from "./resource/rds";
-import { RedirectProtocol } from "aws-cdk-lib/aws-s3";
 
 export class DevioStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -23,21 +22,21 @@ export class DevioStack extends cdk.Stack {
 
     const subnet = new Subnet(vpc.vpc);
     subnet.createResources(this);
-    
+
     const internetGateway = new InternetGateway(vpc.vpc);
     internetGateway.createResources(this);
-    
+
     const elasticIp = new ElasticIp();
     elasticIp.createResources(this);
-    
+
     const natGateway = new NatGateway(
       subnet.public1a,
       subnet.public1c,
       elasticIp.ngw1a,
-      elasticIp.ngw1c,
+      elasticIp.ngw1c
     );
-    natGateway.createResources(this)
-    
+    natGateway.createResources(this);
+
     const routeTable = new RouteTable(
       vpc.vpc,
       subnet.public1a,
@@ -51,7 +50,7 @@ export class DevioStack extends cdk.Stack {
       natGateway.ngw1c
     );
     routeTable.createResources(this);
-    
+
     const networkAcl = new NetworkAcl(
       vpc.vpc,
       subnet.public1a,
@@ -59,16 +58,16 @@ export class DevioStack extends cdk.Stack {
       subnet.app1a,
       subnet.app1c,
       subnet.db1a,
-      subnet.db1c,
+      subnet.db1c
     );
     networkAcl.createResources(this);
-    
+
     const iamRole = new IamRole();
     iamRole.createResources(this);
-    
+
     const securityGroup = new SecurityGroup(vpc.vpc);
     securityGroup.createResources(this);
-    
+
     const ec2 = new Ec2(
       subnet.app1a,
       subnet.app1c,
@@ -76,7 +75,7 @@ export class DevioStack extends cdk.Stack {
       securityGroup.ec2
     );
     ec2.createResources(this);
-    
+
     const alb = new Alb(
       vpc.vpc,
       subnet.public1a,
@@ -86,16 +85,15 @@ export class DevioStack extends cdk.Stack {
       ec2.instance1c
     );
     alb.createResources(this);
-    
+
     const secretsManager = new SecretsManager();
     secretsManager.createResources(this);
-    
-    const masterUsername = SecretsManager.getDynamicReference(secretsManager.rdsCluster, OSecretKey.MasterUsername);
-    const masterUserPassword = SecretsManager.getDynamicReference(secretsManager.rdsCluster, OSecretKey.MasterUserPassword);
-    
+
     const rds = new Rds(
       subnet.db1a,
       subnet.db1c,
+      securityGroup.rds,
+      secretsManager.secretRdsCluster
     );
     rds.createResources(this);
   }
