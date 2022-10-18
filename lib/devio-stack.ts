@@ -93,7 +93,8 @@ export class DevioStack extends cdk.Stack {
       subnet.db1a,
       subnet.db1c,
       securityGroup.rds,
-      secretsManager.secretRdsCluster
+      secretsManager.secretRdsCluster,
+      iamRole.rds
     );
     rds.createResources(this);
   }
