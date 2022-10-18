@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/lib/devio-stack.ts",
+            "program": "${workspaceFolder}/bin/devio.ts",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ],
