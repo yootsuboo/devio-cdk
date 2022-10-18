@@ -22,6 +22,10 @@ export class DevioStack extends cdk.Stack {
 
     const subnet = new Subnet(vpc.vpc);
     subnet.createResources(this);
+    
+    // デバック用にログ出力する設定
+    // cdk synth --quiet
+    // console.log(`subnet.public1a.cidrBlock = ${subnet.public1a.cidrBlock}`);
 
     const internetGateway = new InternetGateway(vpc.vpc);
     internetGateway.createResources(this);
