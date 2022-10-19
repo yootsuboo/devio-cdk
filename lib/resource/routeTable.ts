@@ -1,4 +1,4 @@
-import * as cdk from "@aws-cdk/core";
+import { Construct } from "constructs";
 import {
   CfnRouteTable,
   CfnRoute,
@@ -7,7 +7,7 @@ import {
   CfnSubnet,
   CfnInternetGateway,
   CfnNatGateway,
-} from "@aws-cdk/aws-ec2";
+} from "aws-cdk-lib/aws-ec2";
 import { Resource } from "./abstract/resource";
 
 // 入れ子のインスタンスはすべて使用する必要はない?
@@ -152,7 +152,7 @@ export class RouteTable extends Resource {
     this.natGateway1c = natGateway1c;
   }
 
-  createResources(scope: cdk.Construct) {
+  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
       const routeTable = this.createRouteTable(scope, resourceInfo);
       resourceInfo.assign(routeTable);
@@ -160,7 +160,7 @@ export class RouteTable extends Resource {
   }
 
   private createRouteTable(
-    scope: cdk.Construct,
+    scope: Construct,
     resourceInfo: ResourceInfo
   ): CfnRouteTable {
     const routeTable = new CfnRouteTable(scope, resourceInfo.id, {
@@ -185,7 +185,7 @@ export class RouteTable extends Resource {
   }
 
   private createRoute(
-    scope: cdk.Construct,
+    scope: Construct,
     routeInfo: RouteInfo,
     routeTable: CfnRouteTable
   ) {
@@ -202,7 +202,7 @@ export class RouteTable extends Resource {
   }
 
   private createAssociation(
-    scope: cdk.Construct,
+    scope: Construct,
     associationInfo: AssociationInfo,
     routeTable: CfnRouteTable
   ) {

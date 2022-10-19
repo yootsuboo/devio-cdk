@@ -1,6 +1,6 @@
-import * as cdk from "@aws-cdk/core";
-import { CfnInstance, CfnSubnet, CfnSecurityGroup } from "@aws-cdk/aws-ec2";
-import { CfnInstanceProfile } from "@aws-cdk/aws-iam";
+import { Construct } from "constructs";
+import { CfnInstance, CfnSubnet, CfnSecurityGroup } from "aws-cdk-lib/aws-ec2";
+import { CfnInstanceProfile } from "aws-cdk-lib/aws-iam";
 import { Resource } from "./abstract/resource";
 import * as fs from "fs";
 
@@ -53,7 +53,7 @@ export class Ec2 extends Resource {
     this.securityGroupEc2 = securityGroupEc2;
   }
 
-  createResources(scope: cdk.Construct) {
+  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
       const instance = this.createInstance(scope, resourceInfo);
       resourceInfo.assign(instance);
@@ -61,7 +61,7 @@ export class Ec2 extends Resource {
   }
 
   private createInstance(
-    scope: cdk.Construct,
+    scope: Construct,
     resourceInfo: ResourceInfo
   ): CfnInstance {
     const instance = new CfnInstance(scope, resourceInfo.id, {

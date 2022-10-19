@@ -1,4 +1,4 @@
-import * as cdk from "@aws-cdk/core";
+import { Construct } from "constructs";
 import {
   CfnRole,
   CfnInstanceProfile,
@@ -7,7 +7,7 @@ import {
   PolicyStatementProps,
   Effect,
   ServicePrincipal,
-} from "@aws-cdk/aws-iam";
+} from "aws-cdk-lib/aws-iam";
 import { Resource } from "./abstract/resource";
 
 interface ResourceInfo {
@@ -56,7 +56,7 @@ export class IamRole extends Resource {
     super();
   }
 
-  createResources(scope: cdk.Construct) {
+  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
       const role = this.createRole(scope, resourceInfo);
       resourceInfo.assign(role);
@@ -73,7 +73,7 @@ export class IamRole extends Resource {
   }
 
   private createRole(
-    scope: cdk.Construct,
+    scope: Construct,
     resourceInfo: ResourceInfo
   ): CfnRole {
     const policyStatement = new PolicyStatement(

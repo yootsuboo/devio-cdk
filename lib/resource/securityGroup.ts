@@ -1,10 +1,10 @@
-import * as cdk from "@aws-cdk/core";
+import { Construct } from "constructs";
 import {
   CfnSecurityGroup,
   CfnSecurityGroupIngress,
   CfnSecurityGroupIngressProps,
   CfnVPC,
-} from "@aws-cdk/aws-ec2";
+} from "aws-cdk-lib/aws-ec2";
 import { Resource } from "./abstract/resource";
 
 interface IngressInfo {
@@ -100,7 +100,7 @@ export class SecurityGroup extends Resource {
     this.vpc = vpc;
   }
 
-  createResources(scope: cdk.Construct) {
+  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
       const securityGroup = this.createResourceGroup(scope, resourceInfo);
       resourceInfo.assign(securityGroup);
@@ -110,7 +110,7 @@ export class SecurityGroup extends Resource {
   }
 
   private createResourceGroup(
-    scope: cdk.Construct,
+    scope: Construct,
     resourceInfo: ResourceInfo
   ): CfnSecurityGroup {
     const resourceName = this.createResourceName(
@@ -133,7 +133,7 @@ export class SecurityGroup extends Resource {
   }
 
   private createSecurityGroupIngress(
-    scope: cdk.Construct,
+    scope: Construct,
     resourceInfo: ResourceInfo
   ) {
     for (const ingress of resourceInfo.ingresses) {
