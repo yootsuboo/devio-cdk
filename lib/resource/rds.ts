@@ -27,7 +27,7 @@ export class Rds extends Resource {
 
   private static readonly databaseName = "devio";
   private static readonly engine = "aurora-mysql";
-  private static readonly dbInstanceClass = "db.t4g.medium";
+  private static readonly dbInstanceClass = "db.r5.large";
   private readonly subnetDb1a: CfnSubnet;
   private readonly subnetDb1c: CfnSubnet;
   private readonly securityGroupRds: CfnSecurityGroup;

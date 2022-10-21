@@ -49,7 +49,7 @@ test("Rds", () => {
 
   template.resourceCountIs("AWS::RDS::DBInstance", 2);
   template.hasResourceProperties("AWS::RDS::DBInstance", {
-    DBInstanceClass: "db.t4g.medium",
+    DBInstanceClass: "db.r5.large",
     AutoMinorVersionUpgrade: false,
     AvailabilityZone: "ap-northeast-1a",
     DBClusterIdentifier: Match.anyValue(),
@@ -64,7 +64,7 @@ test("Rds", () => {
     PreferredMaintenanceWindow: "sun:20:00-sun:20:30",
   });
   template.hasResourceProperties("AWS::RDS::DBInstance", {
-    DBInstanceClass: "db.t4g.medium",
+    DBInstanceClass: "db.r5.large",
     AutoMinorVersionUpgrade: false,
     AvailabilityZone: "ap-northeast-1c",
     DBClusterIdentifier: Match.anyValue(),
