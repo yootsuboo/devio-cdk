@@ -24,19 +24,19 @@ test("IamRole", () => {
     RoleName: "undefined-undefined-role-ec2",
   });
   template.hasResourceProperties("AWS::IAM::Role", {
-    AssumeRolePilicyDocument: {
+    AssumeRolePolicyDocument: {
       Statement: [
         {
           Effect: "Allow",
           Principal: {
             Service: "monitoring.rds.amazonaws.com",
           },
-          Action: "sts.AssumeRole",
+          Action: "sts:AssumeRole",
         },
       ],
     },
-    ManagedPilicyArns: [
-      "arn:aws:iam::policy/service-role/AmazonRDSEnhancedMonitoringRole",
+    ManagedPolicyArns: [
+      "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole",
     ],
     RoleName: "undefined-undefined-role-rds",
   });

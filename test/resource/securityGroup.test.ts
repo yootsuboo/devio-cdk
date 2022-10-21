@@ -20,7 +20,7 @@ test("SecurityGroup", () => {
     VpcId: Match.anyValue(),
     Tags: [{ Key: "Name", Value: "undefined-undefined-sg-ec2" }],
   });
-  template.hasResourceProperties("AWS::EC2::SecurityGroupIngress", {
+  template.hasResourceProperties("AWS::EC2::SecurityGroup", {
     GroupDescription: "for RDS",
     GroupName: "undefined-undefined-sg-rds",
     VpcId: Match.anyValue(),
@@ -40,7 +40,6 @@ test("SecurityGroup", () => {
     FromPort: 443,
     ToPort: 443,
     GroupId: Match.anyValue(),
-    SourceSecurityGroupId: Match.anyValue(),
   });
   template.hasResourceProperties("AWS::EC2::SecurityGroupIngress", {
     IpProtocol: "tcp",

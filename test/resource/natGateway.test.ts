@@ -9,7 +9,7 @@ test("NatGateway", () => {
 
   template.resourceCountIs("AWS::EC2::NatGateway", 2);
   template.hasResourceProperties("AWS::EC2::NatGateway", {
-    Tags: [{ Key: "Name", Value: "undefined-undefined-rgw-1a" }],
+    Tags: [{ Key: "Name", Value: "undefined-undefined-ngw-1a" }],
     AllocationId: Match.anyValue(),
     SubnetId: Match.anyValue(),
   });

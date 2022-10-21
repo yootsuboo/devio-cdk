@@ -43,9 +43,9 @@ export class Rds extends Resource {
     },
     {
       id: "RdaDbInstance1c",
-      availabilityZone: "ap-norhteast-1c",
+      availabilityZone: "ap-northeast-1c",
       preferreadMaintenanceWindow: "sun:20:30-sun:21:00",
-      resourceName: "rds-instance1c",
+      resourceName: "rds-instance-1c",
       assign: (instance) => (this.dbInstance1c = instance),
     },
   ];

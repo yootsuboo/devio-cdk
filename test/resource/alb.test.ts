@@ -10,10 +10,10 @@ test("Alb", () => {
   template.resourceCountIs("AWS::ElasticLoadBalancingV2::LoadBalancer", 1);
   template.hasResourceProperties("AWS::ElasticLoadBalancingV2::LoadBalancer", {
     IpAddressType: "ipv4",
-    Name: "undefined-udefined-alb",
+    Name: "undefined-undefined-alb",
     Scheme: "internet-facing",
     SecurityGroups: Match.anyValue(),
-    Subnet: Match.anyValue(),
+    Subnets: Match.anyValue(),
     Type: "application",
   });
 

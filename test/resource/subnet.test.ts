@@ -12,7 +12,7 @@ test('Subnet', () => {
         CidrBlock: '10.0.11.0/24',
         VpcId: Match.anyValue(),
         AvailabilityZone: 'ap-northeast-1a',
-        Tags: [{ Key: 'Name', Value: 'undifined-undifined-subnet-public-1a'}]
+        Tags: [{ Key: 'Name', Value: 'undefined-undefined-subnet-public-1a'}]
     });
     template.hasResourceProperties('AWS::EC2::Subnet', {
         CidrBlock: '10.0.12.0/24',

@@ -18,7 +18,7 @@ test("Ec2", () => {
     Tags: [{ Key: "Name", Value: "undefined-undefined-ec2-1a" }],
     UserData: Match.anyValue(),
   });
-  template.hasResourceProperties("AWS::EC2::Instancd", {
+  template.hasResourceProperties("AWS::EC2::Instance", {
     AvailabilityZone: "ap-northeast-1c",
     IamInstanceProfile: Match.anyValue(),
     ImageId: "ami-078296f82eb463377",

@@ -1,4 +1,4 @@
-import { App, Stack } from "aws-cdk-lib";
+import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
 import * as Devio from "../../lib/devio-stack";
 
@@ -18,7 +18,7 @@ test("Rds", () => {
   template.hasResourceProperties("AWS::RDS::DBClusterParameterGroup", {
     Description: "Cluster Parameter Group for RDS",
     Family: "aurora-mysql5.7",
-    Parameters: { time_zome: "UTC" },
+    Parameters: { time_zone: "UTC" },
   });
 
   template.resourceCountIs("AWS::RDS::DBParameterGroup", 1);
@@ -39,7 +39,7 @@ test("Rds", () => {
     EngineMode: "provisioned",
     EngineVersion: "5.7.mysql_aurora.2.10.0",
     MasterUsername: Match.anyValue(),
-    MasterPassword: Match.anyValue(),
+    MasterUserPassword: Match.anyValue(),
     Port: 3306,
     PreferredBackupWindow: "19:00-19:30",
     PreferredMaintenanceWindow: "sun:19:30-sun:20:00",
@@ -71,7 +71,7 @@ test("Rds", () => {
     DBInstanceIdentifier: "undefined-undefined-rds-instance-1c",
     DBParameterGroupName: Match.anyValue(),
     DBSubnetGroupName: Match.anyValue(),
-    EnablePeformanceInsights: true,
+    EnablePerformanceInsights: true,
     Engine: "aurora-mysql",
     MonitoringInterval: 60,
     MonitoringRoleArn: Match.anyValue(),

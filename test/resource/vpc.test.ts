@@ -10,6 +10,6 @@ test('Vpc', () => {
     template.resourceCountIs('AWS::EC2::VPC', 1);
     template.hasResourceProperties('AWS::EC2::VPC', {
         CidrBlock: '10.0.0.0/16',
-        Tags: [{ Key: 'Name', Value: 'undefines-undefined-vpc' }] 
+        Tags: [{ Key: 'Name', Value: 'undefined-undefined-vpc' }] 
     });
 });

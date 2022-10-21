@@ -8,15 +8,15 @@ test("NetworkAcl", () => {
   const template = Template.fromStack(stack);
 
   template.resourceCountIs("AWS::EC2::NetworkAcl", 3);
-  template.hasResourceProperties("AWS::EC2::NetworlAcl", {
+  template.hasResourceProperties("AWS::EC2::NetworkAcl", {
     VpcId: Match.anyValue(),
     Tags: [{ Key: "Name", Value: "undefined-undefined-nacl-public" }],
   });
   template.hasResourceProperties("AWS::EC2::NetworkAcl", {
     VpcId: Match.anyValue(),
-    Tags: [{ Key: "Name", Value: "udefined-undefined-nacl-app" }],
+    Tags: [{ Key: "Name", Value: "undefined-undefined-nacl-app" }],
   });
-  template.hasResourceProperties("AWS::EC2::NetworlAcl", {
+  template.hasResourceProperties("AWS::EC2::NetworkAcl", {
     VpcId: Match.anyValue(),
     Tags: [{ Key: "Name", Value: "undefined-undefined-nacl-db" }],
   });
@@ -26,7 +26,7 @@ test("NetworkAcl", () => {
   // Egressは省略可能?
   template.hasResourceProperties("AWS::EC2::NetworkAclEntry", {
     NetworkAclId: Match.anyValue(),
-    Protocole: -1,
+    Protocol: -1,
     RuleAction: "allow",
     RuleNumber: 100,
     CidrBlock: "0.0.0.0/0",
@@ -36,7 +36,7 @@ test("NetworkAcl", () => {
     Protocol: -1,
     RuleAction: "allow",
     RuleNumber: 100,
-    CifrBlock: "0.0.0.0/0",
+    CidrBlock: "0.0.0.0/0",
     Egress: true,
   });
   template.resourceCountIs("AWS::EC2::SubnetNetworkAclAssociation", 6);

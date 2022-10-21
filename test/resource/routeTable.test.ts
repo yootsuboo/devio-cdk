@@ -18,17 +18,17 @@ test("RouteTable", () => {
   });
   template.hasResourceProperties("AWS::EC2::RouteTable", {
     VpcId: Match.anyValue(),
-    Tags: [{ Key: "Name", Value: "undefined-undefined-app-1c" }],
+    Tags: [{ Key: "Name", Value: "undefined-undefined-rtb-app-1c" }],
   });
   template.hasResourceProperties("AWS::EC2::RouteTable", {
     VpcId: Match.anyValue(),
-    Tags: [{ Key: "Name", Value: "undefined-undefined-db" }],
+    Tags: [{ Key: "Name", Value: "undefined-undefined-rtb-db" }],
   });
 
   template.resourceCountIs("AWS::EC2::Route", 3);
   template.hasResourceProperties("AWS::EC2::Route", {
     RouteTableId: Match.anyValue(),
-    DestinationCideBlock: "0.0.0.0/0",
+    DestinationCidrBlock: "0.0.0.0/0",
     GatewayId: Match.anyValue(),
   }),
     template.hasResourceProperties("AWS::EC2::Route", {
@@ -38,7 +38,7 @@ test("RouteTable", () => {
     });
 
   template.resourceCountIs("AWS::EC2::SubnetRouteTableAssociation", 6);
-  template.hasResourceProperties("AWS::EC2::SubnetRouteTableAssosiation", {
+  template.hasResourceProperties("AWS::EC2::SubnetRouteTableAssociation", {
     RouteTableId: Match.anyValue(),
     SubnetId: Match.anyValue(),
   });
