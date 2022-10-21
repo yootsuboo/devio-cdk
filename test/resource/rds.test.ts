@@ -37,7 +37,7 @@ test("Rds", () => {
     DBSubnetGroupName: Match.anyValue(),
     EnableCloudwatchLogsExports: ["error"],
     EngineMode: "provisioned",
-    EngineVersion: "5.7.mysql_aurora.2.10.0",
+    EngineVersion: "5.7.mysql_aurora.2.11.0",
     MasterUsername: Match.anyValue(),
     MasterUserPassword: Match.anyValue(),
     Port: 3306,
@@ -49,7 +49,7 @@ test("Rds", () => {
 
   template.resourceCountIs("AWS::RDS::DBInstance", 2);
   template.hasResourceProperties("AWS::RDS::DBInstance", {
-    DBInstanceClass: "db.r5.small",
+    DBInstanceClass: "db.t4g.medium",
     AutoMinorVersionUpgrade: false,
     AvailabilityZone: "ap-northeast-1a",
     DBClusterIdentifier: Match.anyValue(),
@@ -64,7 +64,7 @@ test("Rds", () => {
     PreferredMaintenanceWindow: "sun:20:00-sun:20:30",
   });
   template.hasResourceProperties("AWS::RDS::DBInstance", {
-    DBInstanceClass: "db.r5.small",
+    DBInstanceClass: "db.t4g.medium",
     AutoMinorVersionUpgrade: false,
     AvailabilityZone: "ap-northeast-1c",
     DBClusterIdentifier: Match.anyValue(),

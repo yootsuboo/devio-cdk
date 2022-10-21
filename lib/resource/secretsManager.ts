@@ -30,32 +30,38 @@ export class SecretsManager extends Resource {
         secretStringTemplate: `{"${OSecretKey.MasterUsername}": "${SecretsManager.rdsClusterMasterUsername}"}`,
       },
       resourceName: "secrets-rds-cluster",
-      assign: secret => this.secretRdsCluster = secret
+      assign: (secret) => (this.secretRdsCluster = secret),
     },
   ];
-  
+
   constructor() {
     super();
-  };
-  
+  }
+
   createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
-        const secret = this.createSecret(scope, resourceInfo);
-        resourceInfo.assign(secret);
+      const secret = this.createSecret(scope, resourceInfo);
+      resourceInfo.assign(secret);
     }
-   }
-
-  public static getDynamicReference(secret: CfnSecret, secretKey: SecretKey): string {
-    return `{{resolve: secretsmanager:${secret.ref}:SecretString:${secretKey}}}`;
   }
-  
-  private createSecret(scope: Construct, resourceInfo: ResourceInfo): CfnSecret {
+
+  public static getDynamicReference(
+    secret: CfnSecret,
+    secretKey: SecretKey
+  ): string {
+    return `{{resolve:secretsmanager:${secret.ref}:SecretString:${secretKey}}}`;
+  }
+
+  private createSecret(
+    scope: Construct,
+    resourceInfo: ResourceInfo
+  ): CfnSecret {
     const secret = new CfnSecret(scope, resourceInfo.id, {
-        description: resourceInfo.description,
-        generateSecretString: resourceInfo.generateSecretString,
-        name: this.createResourceName(scope, resourceInfo.resourceName)
+      description: resourceInfo.description,
+      generateSecretString: resourceInfo.generateSecretString,
+      name: this.createResourceName(scope, resourceInfo.resourceName),
     });
-    
+
     return secret;
   }
 }

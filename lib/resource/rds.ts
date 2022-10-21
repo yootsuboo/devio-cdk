@@ -27,7 +27,7 @@ export class Rds extends Resource {
 
   private static readonly databaseName = "devio";
   private static readonly engine = "aurora-mysql";
-  private static readonly dbInstanceClass = "db.r5.small";
+  private static readonly dbInstanceClass = "db.t4g.medium";
   private readonly subnetDb1a: CfnSubnet;
   private readonly subnetDb1c: CfnSubnet;
   private readonly securityGroupRds: CfnSecurityGroup;
@@ -139,7 +139,7 @@ export class Rds extends Resource {
       dbSubnetGroupName: subnetGroup.ref,
       enableCloudwatchLogsExports: ["error"],
       engineMode: "provisioned",
-      engineVersion: "5.7.mysql_aurora.2.10.0",
+      engineVersion: "5.7.mysql_aurora.2.11.0",
       masterUserPassword: SecretsManager.getDynamicReference(
         this.secretRdsCluster,
         OSecretKey.MasterUserPassword
