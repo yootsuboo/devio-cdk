@@ -131,7 +131,7 @@ export class Rds extends Resource {
     clusterParameterGroup: CfnDBClusterParameterGroup
   ): CfnDBCluster {
     const cluster = new CfnDBCluster(scope, "RdsDbCluster", {
-      engine: "aurora-mysql",
+      engine: Rds.engine,
       backupRetentionPeriod: 7,
       databaseName: Rds.databaseName,
       dbClusterIdentifier: this.createResourceName(scope, "rds-cluster"),
