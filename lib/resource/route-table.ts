@@ -3,12 +3,12 @@ import {
   CfnRouteTable,
   CfnRoute,
   CfnSubnetRouteTableAssociation,
-  CfnVPC,
-  CfnSubnet,
-  CfnInternetGateway,
-  CfnNatGateway,
 } from "aws-cdk-lib/aws-ec2";
-import { Resource } from "./abstract/resource";
+import { BaseResource } from "./abstract/base-resource";
+import { Subnet } from "./subnet";
+import { InternetGateway } from "./internet-gateway";
+import { NatGateway } from "./nat-gateway";
+import { Vpc } from "./vpc";
 
 // 入れ子のインスタンスはすべて使用する必要はない?
 interface RouteInfo {
@@ -34,22 +34,16 @@ interface ResourceInfo {
   readonly assign: (routeTable: CfnRouteTable) => void;
 }
 
-export class RouteTable extends Resource {
-  public public: CfnRouteTable;
-  public app1a: CfnRouteTable;
-  public app1c: CfnRouteTable;
-  public db: CfnRouteTable;
+export class RouteTable extends BaseResource {
+  public readonly public: CfnRouteTable;
+  public readonly app1a: CfnRouteTable;
+  public readonly app1c: CfnRouteTable;
+  public readonly db: CfnRouteTable;
 
-  private readonly vpc: CfnVPC;
-  private readonly subnetPublic1a: CfnSubnet;
-  private readonly subnetPublic1c: CfnSubnet;
-  private readonly subnetApp1a: CfnSubnet;
-  private readonly subnetApp1c: CfnSubnet;
-  private readonly subnetDb1a: CfnSubnet;
-  private readonly subnetDb1c: CfnSubnet;
-  private readonly internetGateway: CfnInternetGateway;
-  private readonly natGateway1a: CfnNatGateway;
-  private readonly natGateway1c: CfnNatGateway;
+  private readonly vpc: Vpc;
+  private readonly subnet: Subnet;
+  private readonly internetGateway: InternetGateway;
+  private readonly natGateway: NatGateway;
   private readonly resources: ResourceInfo[] = [
     {
       id: "RouteTablePublic",
@@ -64,14 +58,14 @@ export class RouteTable extends Resource {
       associations: [
         {
           id: "AssociationPublic1a",
-          subnetId: () => this.subnetPublic1a.ref,
+          subnetId: () => this.subnet.public1a.ref,
         },
         {
           id: "AssociationPublic1c",
-          subnetId: () => this.subnetPublic1c.ref,
+          subnetId: () => this.subnet.public1c.ref,
         },
       ],
-      assign: (routeTable) => (this.public = routeTable),
+      assign: (routeTable) => ((this.public as CfnRouteTable) = routeTable),
     },
     {
       id: "RouteTableApp1a",
@@ -80,16 +74,16 @@ export class RouteTable extends Resource {
         {
           id: "RouteApp1a",
           destinationCidrBlock: "0.0.0.0/0",
-          natGatewayId: () => this.natGateway1a.ref,
+          natGatewayId: () => this.natGateway.ngw1a.ref,
         },
       ],
       associations: [
         {
           id: "AssociationApp1a",
-          subnetId: () => this.subnetApp1a.ref,
+          subnetId: () => this.subnet.app1a.ref,
         },
       ],
-      assign: (routeTable) => (this.app1a = routeTable),
+      assign: (routeTable) => ((this.app1a as CfnRouteTable) = routeTable),
     },
     {
       id: "RouteTableApp1c",
@@ -98,16 +92,16 @@ export class RouteTable extends Resource {
         {
           id: "RouteApp1c",
           destinationCidrBlock: "0.0.0.0/0",
-          natGatewayId: () => this.natGateway1c.ref,
+          natGatewayId: () => this.natGateway.ngw1c.ref,
         },
       ],
       associations: [
         {
           id: "AssociationApp1c",
-          subnetId: () => this.subnetApp1c.ref,
+          subnetId: () => this.subnet.app1c.ref,
         },
       ],
-      assign: (routeTable) => (this.app1c = routeTable),
+      assign: (routeTable) => ((this.app1c as CfnRouteTable) = routeTable),
     },
     {
       id: "RouteTableDb",
@@ -116,46 +110,41 @@ export class RouteTable extends Resource {
       associations: [
         {
           id: "AssociationDb1a",
-          subnetId: () => this.subnetDb1a.ref,
+          subnetId: () => this.subnet.db1a.ref,
         },
         {
           id: "AssociationDb1c",
-          subnetId: () => this.subnetDb1c.ref,
+          subnetId: () => this.subnet.db1c.ref,
         },
       ],
-      assign: (routeTable) => (this.db = routeTable),
+      assign: (routeTable) => ((this.db as CfnRouteTable) = routeTable),
     },
   ];
 
   constructor(
-    vpc: CfnVPC,
-    subnetPublic1a: CfnSubnet,
-    subnetPublic1c: CfnSubnet,
-    subnetApp1a: CfnSubnet,
-    subnetApp1c: CfnSubnet,
-    subnetDb1a: CfnSubnet,
-    subnetDb1c: CfnSubnet,
-    internetGateway: CfnInternetGateway,
-    natGateway1a: CfnNatGateway,
-    natGateway1c: CfnNatGateway
+    scope: Construct,
+    vpc: Vpc,
+    subnet: Subnet,
+    internetGateway: InternetGateway,
+    natGateway: NatGateway
   ) {
     super();
     this.vpc = vpc;
-    this.subnetPublic1a = subnetPublic1a;
-    this.subnetPublic1c = subnetPublic1c;
-    this.subnetApp1a = subnetApp1a;
-    this.subnetApp1c = subnetApp1c;
-    this.subnetDb1a = subnetDb1a;
-    this.subnetDb1c = subnetDb1c;
+    this.subnet = subnet;
     this.internetGateway = internetGateway;
-    this.natGateway1a = natGateway1a;
-    this.natGateway1c = natGateway1c;
-  }
+    this.natGateway = natGateway;
 
-  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
       const routeTable = this.createRouteTable(scope, resourceInfo);
       resourceInfo.assign(routeTable);
+
+      for (const routeInfo of resourceInfo.routes) {
+        this.createRoute(scope, routeInfo, routeTable);
+      }
+
+      for (const associationInfo of resourceInfo.associations) {
+        this.createAssociation(scope, associationInfo, routeTable);
+      }
     }
   }
 
@@ -164,7 +153,7 @@ export class RouteTable extends Resource {
     resourceInfo: ResourceInfo
   ): CfnRouteTable {
     const routeTable = new CfnRouteTable(scope, resourceInfo.id, {
-      vpcId: this.vpc.ref,
+      vpcId: this.vpc.vpc.ref,
       tags: [
         {
           key: "Name",
@@ -172,14 +161,6 @@ export class RouteTable extends Resource {
         },
       ],
     });
-
-    for (const routeInfo of resourceInfo.routes) {
-      this.createRoute(scope, routeInfo, routeTable);
-    }
-
-    for (const associationInfo of resourceInfo.associations) {
-      this.createAssociation(scope, associationInfo, routeTable);
-    }
 
     return routeTable;
   }

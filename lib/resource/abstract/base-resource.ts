@@ -1,10 +1,10 @@
 import { Construct } from "constructs";
 
-export abstract class Resource {
-  constructor() {}
+// ここは何をやっている?
+// abstruct とは?
+export abstract class BaseResource {
+  constructor() { }
 
-  abstract createResources(scope: Construct): void;
-  
   // protectedを使用することで、参照先でも使用できるようになる
   protected createResourceName(
     scope: Construct,

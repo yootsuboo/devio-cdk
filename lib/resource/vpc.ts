@@ -1,15 +1,13 @@
 import { Construct } from "constructs";
 import { CfnVPC } from "aws-cdk-lib/aws-ec2";
-import { Resource } from "./abstract/resource";
+import { BaseResource } from "./abstract/base-resource";
 
-export class Vpc extends Resource {
-  public vpc: CfnVPC;
+export class Vpc extends BaseResource {
+  public readonly vpc: CfnVPC;
 
-  constructor() {
+  constructor(scope: Construct) {
     super();
-  }
 
-  createResources(scope: Construct) {
     this.vpc = new CfnVPC(scope, "Vpc", {
       cidrBlock: "10.0.0.0/16",
       tags: [{ key: "Name", value: this.createResourceName(scope, "vpc") }],
