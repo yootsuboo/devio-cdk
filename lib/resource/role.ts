@@ -8,20 +8,26 @@ import {
   Effect,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
-import { Resource } from "./abstract/resource";
+import { BaseResource } from "./abstract/base-resource";
+
+interface InstanceProfileInfo {
+  readonly id: string;
+  readonly assign: (instanceProfile: CfnInstanceProfile) => void;
+}
 
 interface ResourceInfo {
   readonly id: string;
   readonly policyStatementProps: PolicyStatementProps;
   readonly managedPolicyArns: string[];
-  readonly roleName: string;
+  readonly resourceName: string;
+  readonly instanceProfile?: InstanceProfileInfo;
   readonly assign: (role: CfnRole) => void;
 }
 
-export class IamRole extends Resource {
-  public ec2: CfnRole;
-  public rds: CfnRole;
-  public instanceProfileEc2: CfnInstanceProfile;
+export class Role extends BaseResource {
+  public readonly ec2: CfnRole;
+  public readonly rds: CfnRole;
+  public readonly instanceProfileEc2: CfnInstanceProfile;
 
   private readonly resources: ResourceInfo[] = [
     {
@@ -34,8 +40,8 @@ export class IamRole extends Resource {
       managedPolicyArns: [
         "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
       ],
-      roleName: "role-ec2",
-      assign: (role) => (this.ec2 = role),
+      resourceName: "role-ec2",
+      assign: (role) => ((this.ec2 as CfnRole) = role),
     },
     {
       id: "RoleRds",
@@ -47,29 +53,24 @@ export class IamRole extends Resource {
       managedPolicyArns: [
         "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole",
       ],
-      roleName: "role-rds",
-      assign: (role) => (this.rds = role),
+      resourceName: "role-rds",
+      assign: (role) => ((this.rds as CfnRole) = role),
     },
   ];
 
-  constructor() {
+  constructor(scope: Construct) {
     super();
-  }
 
-  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
       const role = this.createRole(scope, resourceInfo);
       resourceInfo.assign(role);
-    }
-
-    this.instanceProfileEc2 = new CfnInstanceProfile(
-      scope,
-      "InstanceProfileEc2",
-      {
-        roles: [this.ec2.ref],
-        instanceProfileName: this.ec2.roleName,
+      
+      const instanceProfileInfo = resourceInfo.instanceProfile;
+      if (instanceProfileInfo) {
+        const instanceProfile = this.createInstanceProfile(scope, instanceProfileInfo, role);
+        instanceProfileInfo.assign(instanceProfile);
       }
-    );
+    }
   }
 
   private createRole(
@@ -86,9 +87,18 @@ export class IamRole extends Resource {
     const role = new CfnRole(scope, resourceInfo.id, {
       assumeRolePolicyDocument: policyDocument,
       managedPolicyArns: resourceInfo.managedPolicyArns,
-      roleName: this.createResourceName(scope, resourceInfo.roleName),
+      roleName: this.createResourceName(scope, resourceInfo.resourceName),
     });
 
     return role;
+  }
+  
+  private createInstanceProfile(scope: Construct, instanceProfileInfo: InstanceProfileInfo, role: CfnRole): CfnInstanceProfile {
+    const instanceProfile = new CfnInstanceProfile(scope, instanceProfileInfo.id, {
+      roles: [role.ref],
+      instanceProfileName: role.roleName
+    });
+    
+    return instanceProfile;
   }
 }
