@@ -9,22 +9,24 @@ import { Subnet } from "../resource/subnet";
 import { Vpc } from "../resource/vpc";
 
 export class VpcStack extends Stack {
+    public readonly vpc: Vpc;
+    public readonly subnet: Subnet;
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const vpc = new Vpc(this);
+        this.vpc = new Vpc(this);
 
-        const subnet = new Subnet(this, vpc);
+        this.subnet = new Subnet(this, this.vpc);
 
-        const internetGateway = new InternetGateway(this, vpc);
+        const internetGateway = new InternetGateway(this, this.vpc);
 
         const elasticIp = new ElasticIp(this);
 
-        const natGateway = new NatGateway(this, subnet, elasticIp);
+        const natGateway = new NatGateway(this, this.subnet, elasticIp);
 
         // constで変数にしないのは、おそらくどこからも参照されないから??
-        new RouteTable(this, vpc, subnet, internetGateway, natGateway);
+        new RouteTable(this, this.vpc, this.subnet, internetGateway, natGateway);
         
-        new NetworkAcl(this, vpc, subnet);
+        new NetworkAcl(this, this.vpc, this.subnet);
     }
 }

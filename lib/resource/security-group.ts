@@ -3,9 +3,9 @@ import {
   CfnSecurityGroup,
   CfnSecurityGroupIngress,
   CfnSecurityGroupIngressProps,
-  CfnVPC,
 } from "aws-cdk-lib/aws-ec2";
-import { Resource } from "./abstract/resource";
+import { BaseResource } from "./abstract/base-resource";
+import { Vpc } from "./vpc";
 
 interface IngressInfo {
   readonly id: string;
@@ -22,12 +22,12 @@ interface ResourceInfo {
   readonly assign: (securityGroup: CfnSecurityGroup) => void;
 }
 
-export class SecurityGroup extends Resource {
-  public alb: CfnSecurityGroup;
-  public ec2: CfnSecurityGroup;
-  public rds: CfnSecurityGroup;
+export class SecurityGroup extends BaseResource {
+  public readonly alb: CfnSecurityGroup;
+  public readonly ec2: CfnSecurityGroup;
+  public readonly rds: CfnSecurityGroup;
 
-  private readonly vpc: CfnVPC;
+  private readonly vpc: Vpc;
   private readonly resources: ResourceInfo[] = [
     {
       id: "SecurityGroupAlb",
@@ -55,7 +55,7 @@ export class SecurityGroup extends Resource {
         },
       ],
       resourceName: "sg-alb",
-      assign: (securityGroup) => (this.alb = securityGroup),
+      assign: (securityGroup) => ((this.alb as CfnSecurityGroup) = securityGroup),
     },
     {
       id: "SecurityGroupEc2",
@@ -73,7 +73,7 @@ export class SecurityGroup extends Resource {
         },
       ],
       resourceName: "sg-ec2",
-      assign: (securityGroup) => (this.ec2 = securityGroup),
+      assign: (securityGroup) => ((this.ec2 as CfnSecurityGroup) = securityGroup),
     },
     {
       id: "SeurityGroupRds",
@@ -91,25 +91,23 @@ export class SecurityGroup extends Resource {
         },
       ],
       resourceName: "sg-rds",
-      assign: (securityGroup) => (this.rds = securityGroup),
+      assign: (securityGroup) => ((this.rds as CfnSecurityGroup) = securityGroup),
     },
   ];
 
-  constructor(vpc: CfnVPC) {
+  constructor(scope: Construct, vpc: Vpc) {
     super();
     this.vpc = vpc;
-  }
 
-  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
-      const securityGroup = this.createResourceGroup(scope, resourceInfo);
+      const securityGroup = this.createSecurityGroup(scope, resourceInfo);
       resourceInfo.assign(securityGroup);
 
       this.createSecurityGroupIngress(scope, resourceInfo);
     }
   }
 
-  private createResourceGroup(
+  private createSecurityGroup(
     scope: Construct,
     resourceInfo: ResourceInfo
   ): CfnSecurityGroup {
@@ -120,7 +118,7 @@ export class SecurityGroup extends Resource {
     const securityGroup = new CfnSecurityGroup(scope, resourceInfo.id, {
       groupDescription: resourceInfo.groupDescription,
       groupName: resourceName,
-      vpcId: this.vpc.ref,
+      vpcId: this.vpc.vpc.ref,
       tags: [
         {
           key: "Name",
