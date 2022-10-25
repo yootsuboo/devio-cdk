@@ -1,6 +1,6 @@
 import { Construct } from "constructs";
 import { CfnSecret } from "aws-cdk-lib/aws-secretsmanager";
-import { Resource } from "./abstract/resource";
+import { BaseResource } from "./abstract/base-resource";
 
 export const OSecretKey = {
   MasterUsername: "MasterUsername",
@@ -16,8 +16,9 @@ interface ResourceInfo {
   readonly assign: (secret: CfnSecret) => void;
 }
 
-export class SecretsManager extends Resource {
-  public secretRdsCluster: CfnSecret;
+export class Secret extends BaseResource {
+  public readonly rdsCluster: CfnSecret;
+
   private static readonly rdsClusterMasterUsername = "admin";
   private readonly resources: ResourceInfo[] = [
     {
@@ -27,18 +28,16 @@ export class SecretsManager extends Resource {
         excludeCharacters: "\"@/\\'",
         generateStringKey: OSecretKey.MasterUserPassword,
         passwordLength: 16,
-        secretStringTemplate: `{"${OSecretKey.MasterUsername}": "${SecretsManager.rdsClusterMasterUsername}"}`,
+        secretStringTemplate: `{"${OSecretKey.MasterUsername}": "${Secret.rdsClusterMasterUsername}"}`,
       },
       resourceName: "secrets-rds-cluster",
-      assign: (secret) => (this.secretRdsCluster = secret),
+      assign: (secret) => ((this.rdsCluster as CfnSecret) = secret),
     },
   ];
 
-  constructor() {
+  constructor(scope: Construct) {
     super();
-  }
 
-  createResources(scope: Construct) {
     for (const resourceInfo of this.resources) {
       const secret = this.createSecret(scope, resourceInfo);
       resourceInfo.assign(secret);
