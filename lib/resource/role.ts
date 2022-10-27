@@ -41,6 +41,11 @@ export class Role extends BaseResource {
         "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
       ],
       resourceName: "role-ec2",
+      instanceProfile: {
+        id: "InstanceProfileEc2",
+        assign: (instanceProfile) =>
+          ((this.instanceProfileEc2 as CfnInstanceProfile) = instanceProfile),
+      },
       assign: (role) => ((this.ec2 as CfnRole) = role),
     },
     {
@@ -64,19 +69,20 @@ export class Role extends BaseResource {
     for (const resourceInfo of this.resources) {
       const role = this.createRole(scope, resourceInfo);
       resourceInfo.assign(role);
-      
+
       const instanceProfileInfo = resourceInfo.instanceProfile;
       if (instanceProfileInfo) {
-        const instanceProfile = this.createInstanceProfile(scope, instanceProfileInfo, role);
+        const instanceProfile = this.createInstanceProfile(
+          scope,
+          instanceProfileInfo,
+          role
+        );
         instanceProfileInfo.assign(instanceProfile);
       }
     }
   }
 
-  private createRole(
-    scope: Construct,
-    resourceInfo: ResourceInfo
-  ): CfnRole {
+  private createRole(scope: Construct, resourceInfo: ResourceInfo): CfnRole {
     const policyStatement = new PolicyStatement(
       resourceInfo.policyStatementProps
     );
@@ -92,13 +98,21 @@ export class Role extends BaseResource {
 
     return role;
   }
-  
-  private createInstanceProfile(scope: Construct, instanceProfileInfo: InstanceProfileInfo, role: CfnRole): CfnInstanceProfile {
-    const instanceProfile = new CfnInstanceProfile(scope, instanceProfileInfo.id, {
-      roles: [role.ref],
-      instanceProfileName: role.roleName
-    });
-    
+
+  private createInstanceProfile(
+    scope: Construct,
+    instanceProfileInfo: InstanceProfileInfo,
+    role: CfnRole
+  ): CfnInstanceProfile {
+    const instanceProfile = new CfnInstanceProfile(
+      scope,
+      instanceProfileInfo.id,
+      {
+        roles: [role.ref],
+        instanceProfileName: role.roleName,
+      }
+    );
+
     return instanceProfile;
   }
 }

@@ -1,17 +1,30 @@
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
-import * as Devio from "../../lib/devio-stack";
+import { Ec2Stack } from "../../lib/stack/ec2-stack";
+import { IamStack } from "../../lib/stack/iam-stack";
+import { RdsStack } from "../../lib/stack/rds-stack";
+import { SecretsManagerStack } from "../../lib/stack/secrets-manager-stack";
+import { VpcStack } from "../../lib/stack/vpc-stack";
 
-test("Rds", () => {
-  const app = new App();
-  const stack = new Devio.DevioStack(app, "DevioStack");
-  const template = Template.fromStack(stack);
+test("Rds Stack", () => {
+  const app = new App({
+    context: {
+        "systemName": "devio",
+        "enbType": "stg",
+    }
+  });
+  const vpcStack = new VpcStack(app, "VpcStack");
+  const iamStack = new IamStack(app, "IamStack");
+  const ec2Stack = new Ec2Stack(app, "Ec2Stack", vpcStack, iamStack);
+  const secretsManagerStack = new SecretsManagerStack(app, "SecretsManagerStack");
+  const rdsStack = new RdsStack(app, "RdsStack", vpcStack, iamStack, ec2Stack, secretsManagerStack);
+  const template = Template.fromStack(rdsStack);
 
   template.resourceCountIs("AWS::RDS::DBSubnetGroup", 1);
   template.hasResourceProperties("AWS::RDS::DBSubnetGroup", {
     DBSubnetGroupDescription: "Subnet Group for RDS",
     SubnetIds: Match.anyValue(),
-    DBSubnetGroupName: "undefined-undefined-rds-sng",
+    DBSubnetGroupName: "devio-stg-rds-sng",
   });
 
   template.resourceCountIs("AWS::RDS::DBClusterParameterGroup", 1);
@@ -32,7 +45,7 @@ test("Rds", () => {
     Engine: "aurora-mysql",
     BackupRetentionPeriod: 7,
     DatabaseName: "devio",
-    DBClusterIdentifier: "undefined-undefined-rds-cluster",
+    DBClusterIdentifier: "devio-stg-rds-cluster",
     DBClusterParameterGroupName: Match.anyValue(),
     DBSubnetGroupName: Match.anyValue(),
     EnableCloudwatchLogsExports: ["error"],
@@ -53,7 +66,7 @@ test("Rds", () => {
     AutoMinorVersionUpgrade: false,
     AvailabilityZone: "ap-northeast-1a",
     DBClusterIdentifier: Match.anyValue(),
-    DBInstanceIdentifier: "undefined-undefined-rds-instance-1a",
+    DBInstanceIdentifier: "devio-stg-rds-instance-1a",
     DBParameterGroupName: Match.anyValue(),
     DBSubnetGroupName: Match.anyValue(),
     EnablePerformanceInsights: true,
@@ -68,7 +81,7 @@ test("Rds", () => {
     AutoMinorVersionUpgrade: false,
     AvailabilityZone: "ap-northeast-1c",
     DBClusterIdentifier: Match.anyValue(),
-    DBInstanceIdentifier: "undefined-undefined-rds-instance-1c",
+    DBInstanceIdentifier: "devio-stg-rds-instance-1c",
     DBParameterGroupName: Match.anyValue(),
     DBSubnetGroupName: Match.anyValue(),
     EnablePerformanceInsights: true,
