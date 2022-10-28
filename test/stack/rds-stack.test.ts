@@ -10,7 +10,7 @@ test("Rds Stack", () => {
   const app = new App({
     context: {
         "systemName": "devio",
-        "enbType": "stg",
+        "envType": "stg",
     }
   });
   const vpcStack = new VpcStack(app, "VpcStack");
