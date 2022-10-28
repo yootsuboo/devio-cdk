@@ -63,7 +63,7 @@ export class Instance extends BaseResource {
       availabilityZone: resourceInfo.availabilityZone,
       iamInstanceProfile: this.role.instanceProfileEc2.ref,
       imageId: "ami-078296f82eb463377",
-      instanceType: "ts.micro",
+      instanceType: "t2.micro",
       securityGroupIds: [this.securityGroup.ec2.attrGroupId],
       subnetId: resourceInfo.subnetId(),
       tags: [
