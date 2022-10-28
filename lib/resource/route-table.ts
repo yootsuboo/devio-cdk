@@ -52,7 +52,7 @@ export class RouteTable extends BaseResource {
         {
           id: "RoutePublic",
           destinationCidrBlock: "0.0.0.0/0",
-          gatewayId: () => this.internetGateway.ref,
+          gatewayId: () => this.internetGateway.igw.ref,
         },
       ],
       associations: [
