@@ -27,6 +27,7 @@ export class RdsStack extends Stack {
     new RdsDatabase(
       this,
       subnetGroup,
+      parameterGroup,
       secretsManagerStack.secret,
       ec2Stack.securityGroup,
       iamStack.role

@@ -11,6 +11,7 @@ import { Vpc } from "../resource/vpc";
 export class VpcStack extends Stack {
     public readonly vpc: Vpc;
     public readonly subnet: Subnet;
+
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
